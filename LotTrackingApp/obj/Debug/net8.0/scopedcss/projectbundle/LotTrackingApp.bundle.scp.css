@@ -1,0 +1,49 @@
+/* _content/LotTrackingApp/Views/Shared/_Layout.cshtml.rz.scp.css */
+/* Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand[b-erggfpq04d] {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+a[b-erggfpq04d] {
+  color: #0077cc;
+}
+
+.btn-primary[b-erggfpq04d] {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active[b-erggfpq04d], .nav-pills .show > .nav-link[b-erggfpq04d] {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.border-top[b-erggfpq04d] {
+  border-top: 1px solid #e5e5e5;
+}
+.border-bottom[b-erggfpq04d] {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow[b-erggfpq04d] {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy[b-erggfpq04d] {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+.footer[b-erggfpq04d] {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px;
+}

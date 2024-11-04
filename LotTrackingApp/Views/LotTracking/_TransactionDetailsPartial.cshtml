@@ -1,0 +1,39 @@
+﻿@model List<LotTrackingApp.Models.TransactionDetail>
+
+@if (Model != null && Model.Count > 0)
+{
+    <h3>Transaction Details</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Sequence</th>
+                <th>Recipe ID</th>
+                <th>In Quantity</th>
+                <th>Reject Quantity</th>
+                <th>Account Quantity</th>
+                <th>Out Quantity</th>
+                <th>Equipment ID</th>
+                <th>Remarks</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var detail in Model)
+            {
+                <tr>
+                    <td>@detail.Sequence</td>
+                    <td>@detail.RecipeID</td>
+                    <td>@detail.InQty</td>
+                    <td>@detail.RejectQty</td>
+                    <td>@detail.AccountQty</td>
+                    <td>@detail.OutQty</td>
+                    <td>@detail.EquipmentID</td>
+                    <td>@detail.Remarks</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No transaction details found.</p>
+}

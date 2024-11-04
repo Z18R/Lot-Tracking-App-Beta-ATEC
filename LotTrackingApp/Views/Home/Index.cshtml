@@ -1,0 +1,213 @@
+﻿@model LotTrackingApp.Models.LotTracking
+
+@{
+    ViewData["Title"] = "Lot Details";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="form-group row">
+    <label for="lotAlias" class="col-form-label col-md-2">Enter Lot Alias:</label>
+    <div class="col-md-3">
+        <input type="text" id="lotAlias" class="form-control" />
+    </div>
+    <div class="col-md-2">
+        <button id="getDetailsButton" class="btn btn-primary w-100">
+            Get Details
+        </button>
+    </div>
+</div>
+
+<div class="form-group row mt-2">
+    <div class="col-md-1">
+        <button id="clearButton" class="btn btn-secondary w-100">
+            Clear
+        </button>
+    </div>
+    <div class="col-md-2">
+        <button id="viewDetailsButton" class="btn btn-primary w-100">
+            View Details
+        </button>
+    </div>
+    <div class="col-md-2">
+        <button id="trackInButton" class="btn btn-primary w-100">
+            Track IN
+        </button>
+    </div>
+</div>
+
+<div id="lotDetails" class="mt-4"></div>
+
+
+<div id="inputPanel">
+    <table class="table table-bordered" id="inputTable">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Station</th>
+                <th>Qty In</th>
+                <th>Rejects</th>
+                <th>Accounts</th>
+                <th>Qty Out</th>
+                <th>Mat. Traceability</th>
+                <th>Equipment</th>
+                <th>Remarks</th>
+                <th>Down Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="number">1</td>
+                <td class="textdisplay">Station 1</td>
+                <td class="numeric">
+                    <input id="QtyInText" type="text" class="form-control" readonly />
+                </td>
+                <td class="numeric">
+                    <input id="RejectsText" type="text" class="form-control" onkeypress="return OnQtyKeyPress(event, this.id);" onchange="OnQtyChange();" maxlength="10" placeholder="0" />
+                    <a id="ListRejects" class="mod mod-find" title="Rejects Breakdown" onclick="javascript:return OpenModalWindow('RejectsText');"></a>
+                </td>
+                <td class="numeric">
+                    <input id="AccountsText" type="text" class="form-control" onkeypress="return OnQtyKeyPress(event, this.id);" maxlength="10" placeholder="0" />
+                    <a id="ListAccounts" class="mod mod-find" title="Accounts Breakdown" onclick="javascript:OpenModalWindow('AccountsText');"></a>
+                </td>
+                <td class="numeric">
+                    <input id="QtyOutText" type="text" class="form-control" readonly />
+                </td>
+                <td class="main-column">
+                    <a id="ListTraceability" class="mod mod-find" title="Material Traceability" onclick="javascript:OpenMaterialTraceabilityModal();"></a>
+                </td>
+                <td class="main-column">
+                    <input id="EquipmentSelect" class="form-control" />
+                </td>
+                <td class="main-column">
+                    <input id="RemarksText" type="text" class="form-control" />
+                </td>
+                <td class="numeric">
+                    <a id="ViewDowntime" class="mod mod-find" title="DowntimeDetails"></a>
+                </td>
+            </tr>   
+            <!-- You can add more rows as needed -->
+        </tbody>
+    </table>
+</div>
+
+<div id="transactionDetails" class="mt-4"></div> <!-- Add this div to hold the transaction details -->
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#lotAlias').on('keypress', function (e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                GetLotDetails();
+            }
+        });
+
+        $('#getDetailsButton').on('click', function () {
+            GetLotDetails();
+        });
+
+        $('#clearButton').on('click', function () {
+            ClearLotDetails();
+        });
+
+        $('#viewDetailsButton').on('click', function () {
+            ViewTransactionDetails();
+        });
+
+        $('#trackInButton').on('click', function () {
+            TrackInLot();
+        });
+
+
+
+        // Function to get lot details
+        function GetLotDetails() {
+            const lotAlias = $('#lotAlias').val().trim();
+            console.log("Lot Alias:", lotAlias);
+
+            if (!lotAlias) {
+                $('#lotDetails').html('<p class="text-danger">Please enter a lot alias.</p>');
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("GetLotDetails", "Home")',
+                type: 'GET',
+                data: { lotAlias: lotAlias },
+                success: function (data) {
+                    $('#lotDetails').html(data);
+
+                    const currentQty = $(data).find('#CurrentQty').val();
+                    $('#QtyInText').val(currentQty);
+                },
+                error: function (xhr, status, error) {
+                    $('#lotDetails').html('<p class="text-danger">Error retrieving lot details: ' + error + '</p>');
+                }
+            });
+        }
+
+          function TrackInLot() {
+            const lotAlias = $('#lotAlias').val().trim();
+            const qtyIn = $('#QtyInText').val();
+            const equipmentCode = $('#EquipmentSelect').val();
+            const trackInUser = 1234; // Replace with actual user ID, if available
+
+            if (!lotAlias) {
+                $('#transactionDetails').html('<p class="text-danger">Please enter a lot alias before tracking in.</p>');
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("TrackIn", "LotTracking")', // Make sure this action exists in your controller
+                type: 'POST',
+                data: {
+                    lotAlias: lotAlias,
+                    qtyIn: qtyIn,
+                    equipmentCode: equipmentCode,
+                    trackInUser: trackInUser
+                },
+                success: function (data) {
+                    $('#transactionDetails').html('<p class="text-success">Lot tracked in successfully.</p>');
+                },
+                error: function (xhr, status, error) {
+                    $('#transactionDetails').html('<p class="text-danger">Error tracking in lot: ' + error + '</p>');
+                }
+            });
+        }
+
+        // Function to clear details
+        function ClearLotDetails() {
+            $('#lotAlias').val('');
+            $('#lotDetails').html(''); 
+            $('#transactionDetails').html('');
+            $('#QtyInText').val('');
+        }
+
+        // Function to view transaction details
+        function ViewTransactionDetails() {
+            const lotCode = $('#lotCode').val(); // Get LotCode from the hidden input
+
+            if (!lotCode) {
+                $('#transactionDetails').html('<p class="text-danger">Lot code is missing for transaction details.</p>');
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("GetTransactionDetails", "LotTracking")', // Ensure this points to the correct controller
+                type: 'GET',
+                data: { lotCode: lotCode },
+                success: function (data) {
+                    $('#transactionDetails').html(data);
+                },
+                error: function (xhr, status, error) {
+                    $('#transactionDetails').html('<p class="text-danger">Error retrieving transaction details: ' + error + '</p>');
+                }
+            });
+        }
+
+
+    });
+</script>
